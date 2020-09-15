@@ -1,5 +1,5 @@
 FROM ruby:2.5
-# RUN apt-get update -qq && apt-get install -y nodejs postgresql-client build-essential graphviz
+RUN apt-get update -qq && apt-get install -y nodejs postgresql-client build-essential
 RUN mkdir /myapp
 WORKDIR /myapp
 COPY Gemfile /myapp/Gemfile
