@@ -9,16 +9,45 @@ class LinesController < ApplicationController
   ####################################################################################################
 
   def show
-    file = File.foreach(ENV['FILE_NAME'])
+    one_megabyte = 1024 * 1024
+    file = File.new(ENV['FILE_NAME'])
     line_content = nil
-    @line_number -= 1
     max_line = 1
-    file.each_with_index do |line, idx|
-      if idx == @line_number
-        line_content = line
-        break
+
+    fd = FileDetail.find_by(name: ENV['FILE_NAME'])
+
+
+    # DEFINIR METRICAS!!!
+    if @line_number < 100 && ENV['FILE_SIZE'] / ENV['FILE_LINES']
+      file.each_with_index do |line, idx|
+        if idx == @line_number
+          line_content = line
+          break
+        end
+      end
+    elsif 
+
+    else
+      
+
+      ci = ChunkInfo.where(file_detail_id: fd.id).where('last_line_number < ?', index).last
+  
+      chunk_steps = ci.present? ? ci.chunk_number : 0
+      counter = ci.present? ? ci.last_line_number : 1
+      file.seek(chunk_steps * chunk_size)
+  
+      file.each do |line|
+        if counter == @line_number
+          puts line
+          break
+        end
+  
+        counter += 1
       end
     end
+    
+
+    
 
     if line_content.present?
       render json: {
@@ -31,30 +60,6 @@ class LinesController < ApplicationController
       }, status: 413
     end
   end
-  
-  # def first_solution
-  #   file = File.foreach(ENV['FILE_NAME'])
-  #   line_content = nil
-  #   @line_number -= 1
-  #   max_line = 1
-  #   file.each_with_index do |line, idx|
-  #     if idx == @line_number
-  #       line_content = line
-  #       break
-  #     end
-  #   end
-
-  #   if line_content.present?
-  #     render json: {
-  #       message: 'Found it!',
-  #       line:    line_content
-  #     }, status: 200
-  #   else
-  #     render json: {
-  #       message: 'Line number is bigger than the total number of lines in the file!'
-  #     }, status: 413
-  #   end
-  # end
 
   private
 

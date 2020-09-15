@@ -15,16 +15,19 @@ namespace :pre_processing do
       file_db = FileDetail.create!(name: ENV['FILE_NAME'])
     else
       # file_db.chunk_infos.each(&:delete)
-      "DELETE FROM chunk_infos WHERE chunk_infos.file_detail_id = #{file_db.id};"
+      sql = "DELETE FROM chunk_infos WHERE chunk_infos.file_detail_id = #{file_db.id};"
       ActiveRecord::Base.connection.execute(sql)
     end
-    line_count = 0
+    line_count = 1
     chunk_count = 0
+    new_line = false
+    time_now = Time.now
+    values = []
     while buf = file.read(chunk_size)
       chunk_count += 1
-      line_count += num_lines(buf)
+      line_count += buf.count "\n"
 
-      sql += "INSERT INTO chunk_infos (chunk_number, file_detail_id, last_line_number) VALUES #{chunk_count},#{file_db.id},#{line_count};"
+      values.push("(#{chunk_count},#{file_db.id},#{line_count},'#{time_now}','#{time_now}')")
 
       # ChunkInfo.create!(
       #   chunk_number:     chunk_count,
@@ -32,32 +35,21 @@ namespace :pre_processing do
       #   last_line_number: line_count
       # )
       if chunk_count % 1000 == 0
+        sql = "INSERT INTO chunk_infos (chunk_number, file_detail_id, last_line_number, created_at, updated_at) VALUES #{values.join(',')};"
         ActiveRecord::Base.connection.execute(sql)
-        sql = ''
+        values = []
       end
 
       buf.tap { |buf| buf }
     end
-    ActiveRecord::Base.connection.execute(sql) if sql.present?
+    if values.present?
+      sql = "INSERT INTO chunk_infos (chunk_number, file_detail_id, last_line_number, created_at, updated_at) VALUES #{values.join(',')};"
+      ActiveRecord::Base.connection.execute(sql)
+    end
 
     file_db.update!(
       size:         file_db.chunk_infos.count * chunk_size,
       lines_number: line_count
     )
-  end
-
-  private
-
-  def num_lines(buffer)
-    lines = buffer.split("\n")
-    num_lines = lines.length
-    if num_lines == 1 && !buffer.include?("\n")
-      num_lines = 0
-    else
-      num_lines = lines.length
-      num_lines += 1 if !buffer.first == "\n"
-      num_lines += 1 if !buffer.last == "\n"
-    end
-    num_lines
   end
 end

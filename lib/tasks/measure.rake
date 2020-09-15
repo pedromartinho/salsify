@@ -45,9 +45,9 @@ namespace :measure do
     counter = 0
     profile do
       file = File.new("#{args[:size]}mb_#{args[:type]}.txt")
-      file.each do |_line|
+      file.each do |line|
         if counter == index - 1
-          # puts line
+          puts line
           break
         end
 
@@ -126,6 +126,30 @@ namespace :measure do
       # file.seek(chunk_size * (index - 1))
       # buf = file.read(chunk_size)
       # puts buf
+    end
+  end
+
+  task :final, %i[size type index max] => [:environment] do |_task, args|
+    print "final;#{args[:size]};#{args[:index]};#{args[:max]}"
+    profile do
+      file = File.new("#{args[:size]}mb_#{args[:type]}.txt")
+      index = args[:index].to_i
+      fd = FileDetail.find_by(name: "#{args[:size]}mb_#{args[:type]}.txt")
+
+      ci = ChunkInfo.where(file_detail_id: fd.id).where('last_line_number < ?', index).last
+
+      chunk_steps = ci.present? ? ci.chunk_number : 0
+      counter = ci.present? ? ci.last_line_number : 1
+      file.seek(chunk_steps * chunk_size)
+
+      file.each do |line|
+        if counter == index
+          puts line
+          break
+        end
+
+        counter += 1
+      end
     end
   end
 

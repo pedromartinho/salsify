@@ -10,8 +10,10 @@ docker-compose down
 # If file exists will overwrite the .env file to have the docker container enviroment variable
 # which file it should be considering on the read process 
 if test -f "$1"; then
+  filesize=$(find "$1" -printf "%s")
+  nlines=$(wc -l $1 | awk '{ print $1 }')
   echo Setting ENV variables based on input...
-  echo "FILE_NAME=$1" > .env
+  printf "FILE_NAME=$1\nFILE_SIZE=$filesize\nFILE_LINES=$nlines" > .env
   echo Server awakening...
   docker-compose --env-file .env up -d
   echo File pre-processing is complete!
