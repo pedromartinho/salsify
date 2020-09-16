@@ -14,22 +14,20 @@ namespace :measure do
   task all: :environment do
     all_sizes = [0.1, 0.5, 1, 5, 10, 50, 100, 500] # , 10, 50, 100, 500, 1000]
     all_file_types = ['long_line', 'medium_line', 'short_line', 'only_paragraphs']
-    all_script_types = ['read_file', 'enum', 'read_chunk']
-    print "script;file_size;index;max;freed_objs;time;used_memory\n"
-    3.times do
+    all_script_types = ['read_file', 'enum', 'final']
+    puts 'Pre Processing all files...'
+    system('rails pre_processing:all')
+    puts 'Star getting the metric values...'
+    print "script;file_name;file_size;index;max;freed_objs;time;used_memory\n"
+    1.times do
       all_script_types.each do |script_type|
         all_sizes.each do |size|
           all_file_types.each do |file_type|
             next if size > 100 && file_type == 'only_paragraphs'
 
-            lines = File.new("#{size}mb_#{file_type}.txt").readlines
-            n_lines = 0
-            file = File.new("#{args[:size]}mb_#{args[:type]}.txt")
-            file.each do |_line|
-              break if counter == index - 1
+            fd = FileDetail.find_by(name: "#{size}mb_#{file_type}.txt")
+            n_lines = fd.lines_number
 
-              counter += 1
-            end
             system("rails measure:#{script_type}[#{size},#{file_type},1,#{n_lines}]")
             system("rails measure:#{script_type}[#{size},#{file_type},#{n_lines / 2},#{n_lines}]")
             system("rails measure:#{script_type}[#{size},#{file_type},#{n_lines},#{n_lines}]")
@@ -40,14 +38,16 @@ namespace :measure do
   end
 
   task :enum, %i[size type index max] => [:environment] do |_task, args|
-    print "enumerator;#{args[:size]};#{args[:index]};#{args[:max]}"
+    file_name = "#{args[:size]}mb_#{args[:type]}.txt"
+    print "enum;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
+    print file_name
     index = args[:index].to_i
     counter = 0
     profile do
-      file = File.new("#{args[:size]}mb_#{args[:type]}.txt")
+      file = File.new(file_name)
       file.each do |line|
         if counter == index - 1
-          puts line
+          print " - #{line} "
           break
         end
 
@@ -57,7 +57,8 @@ namespace :measure do
   end
 
   task :read_file, %i[size type index max] => [:environment] do |_task, args|
-    print "read_file;#{args[:size]};#{args[:index]};#{args[:max]}"
+    file_name = "#{args[:size]}mb_#{args[:type]}.txt"
+    print "read_file;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
     index = args[:index].to_i
     final_line = ''
     profile do
@@ -74,68 +75,19 @@ namespace :measure do
       #   final_line.insert(-1, c) if line_count == index - 1
       # end
       # # puts final_line
-      file = File.new("#{args[:size]}mb_#{args[:type]}.txt").readlines
-      # puts file[index]
-    end
-  end
-
-  task :read_chunk, %i[size type index max] => [:environment] do |_task, args|
-    print "read_chunk;#{args[:size]};#{args[:index]};#{args[:max]}"
-    profile do
-      file = File.new("#{args[:size]}mb_#{args[:type]}.txt")
-      index = args[:index].to_i
-      line_count = 0
-      partial_str = ''
-      final_line = nil
-      iteration = 0
-      while buf = file.read(chunk_size)
-        iteration += 1
-        if iteration == index
-          puts buf
-          break
-        end
-        buf.each_line do |l|
-          line_count += 1
-          if line_count == index
-            partial_str += l
-            next
-          end
-          if partial_str.present? && line_count > index
-            final_line = partial_str
-            # puts final_line
-            break
-          elsif partial_str.blank?
-            next
-          end
-
-          final_line = "#{partial_str}#{l}"
-          # puts final_line
-          break
-        end
-        if buf.last == "\n"
-          final_line = partial_str if partial_str.present?
-        else
-          line_count -= 1
-        end
-        break if final_line.present?
-
-        buf.tap { |buf| buf }
-      end
-
-      # iteration = 0
-      # file.seek(chunk_size * (index - 1))
-      # buf = file.read(chunk_size)
-      # puts buf
+      file = File.new(file_name).readlines
+      print " - #{file[index - 1]} "
     end
   end
 
   task :final, %i[size type index max] => [:environment] do |_task, args|
-    print "final;#{args[:size]};#{args[:index]};#{args[:max]}"
-    profile do
-      file = File.new("#{args[:size]}mb_#{args[:type]}.txt")
-      index = args[:index].to_i
-      fd = FileDetail.find_by(name: "#{args[:size]}mb_#{args[:type]}.txt")
+    file_name = "#{args[:size]}mb_#{args[:type]}.txt"
+    print "final;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
 
+    fd = FileDetail.find_by(name: file_name)
+    profile do
+      file = File.new(file_name)
+      index = args[:index].to_i
       ci = ChunkInfo.where(file_detail_id: fd.id).where('last_line_number < ?', index).last
 
       chunk_steps = ci.present? ? ci.chunk_number : 0
@@ -144,7 +96,7 @@ namespace :measure do
 
       file.each do |line|
         if counter == index
-          puts line
+          print line
           break
         end
 

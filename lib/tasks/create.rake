@@ -1,91 +1,128 @@
 namespace :create do
   require 'benchmark'
-  ####################################################################################################
-  # Create File
-  #
-  # Script Description
-  ### Used for the creation of a 1 GB file text file
-  ####################################################################################################
-
   one_megabyte = 1024 * 1024
+  file_sizes = [0.1, 0.5, 1, 5, 10, 50, 100, 500]
 
-  task create_all_files: :environment do
-    system('rails create:create_long_line_files')
-    system('rails create:create_medium_line_files')
-    system('rails create:create_short_line_files')
-    system('rails create:create_only_paragraphs_files')
+  #################################################################################################
+  # Script - Create All Files Script
+  #
+  # Description
+  ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with diferent
+  ### number of characters quantity per line
+  #################################################################################################
+  task all_files: :environment do
+    system('rails create:long_line_files')
+    system('rails create:medium_line_files')
+    system('rails create:short_line_files')
+    system('rails create:only_paragraphs_files')
   end
 
-  task create_long_line_files: :environment do
-    system('rails create:create_long_line_file[0.1]')
-    system('rails create:create_long_line_file[0.5]')
-    system('rails create:create_long_line_file[1]')
-    system('rails create:create_long_line_file[5]')
-    system('rails create:create_long_line_file[10]')
-    system('rails create:create_long_line_file[50]')
-    system('rails create:create_long_line_file[100]')
-    system('rails create:create_long_line_file[500]')
-    # system('rails create:create_long_line_file[1000]')
+  #################################################################################################
+  # Script - Create Long Line Files Script
+  #
+  # Description
+  ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with a high number
+  ### of characters per line
+  #################################################################################################
+  task long_line_files: :environment do
+    file_sizes.each do |file_s|
+      system("rails create:create_long_line_file[#{file_s}]")
+    end
   end
 
-  task create_medium_line_files: :environment do
-    system('rails create:create_medium_line_file[0.1]')
-    system('rails create:create_medium_line_file[0.5]')
-    system('rails create:create_medium_line_file[1]')
-    system('rails create:create_medium_line_file[5]')
-    system('rails create:create_medium_line_file[10]')
-    system('rails create:create_medium_line_file[50]')
-    system('rails create:create_medium_line_file[100]')
-    system('rails create:create_medium_line_file[500]')
-    # system('rails create:create_medium_line_file[1000]')
+  #################################################################################################
+  # Script - Create Medium Line Files Script
+  #
+  # Description
+  ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with a medium
+  ### number of characters per line
+  #################################################################################################
+  task medium_line_files: :environment do
+    file_sizes.each do |file_s|
+      system("rails create:medium_line_file[#{file_s}]")
+    end
   end
 
-  task create_short_line_files: :environment do
-    system('rails create:create_short_line_file[0.1]')
-    system('rails create:create_short_line_file[0.5]')
-    system('rails create:create_short_line_file[1]')
-    system('rails create:create_short_line_file[5]')
-    system('rails create:create_short_line_file[10]')
-    system('rails create:create_short_line_file[50]')
-    system('rails create:create_short_line_file[100]')
-    system('rails create:create_short_line_file[500]')
-    # system('rails create:create_short_line_file[1000]')
+  #################################################################################################
+  # Script - Create Short Line Files Script
+  #
+  # Description
+  ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with a low number
+  ### of characters per line
+  #################################################################################################
+  task short_line_files: :environment do
+    file_sizes.each do |file_s|
+      system("rails create:short_line_file[#{file_s}]")
+    end
   end
 
-  task create_only_paragraphs_files: :environment do
-    system('rails create:create_only_paragraphs_file[0.1]')
-    system('rails create:create_only_paragraphs_file[0.5]')
-    system('rails create:create_only_paragraphs_file[1]')
-    system('rails create:create_only_paragraphs_file[5]')
-    system('rails create:create_only_paragraphs_file[10]')
-    system('rails create:create_only_paragraphs_file[50]')
-    system('rails create:create_only_paragraphs_file[100]')
-    system('rails create:create_only_paragraphs_file[500]')
-    # system('rails create:create_only_paragraphs_file[1000]')
+  #################################################################################################
+  # Script - Create Only Paragraphs Files Script
+  #
+  # Description
+  ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with only empty
+  ### lines
+  #################################################################################################
+  task only_paragraphs_files: :environment do
+    file_sizes.each do |file_s|
+      system("rails create:only_paragraphs_file[#{file_s}]")
+    end
   end
 
-  task :create_long_line_file, [:size] => [:environment] do |_task, args|
+  #################################################################################################
+  # Script - Create Long Line File Script
+  #
+  # Description
+  ### INPUT: size in MB
+  ### Accepts a size argument and will create a file with high number of character per line with
+  ### approximatly the given size
+  #################################################################################################
+  task :long_line_file, [:size] => [:environment] do |_task, args|
     File.open("./#{args[:size]}mb_long_line.txt", 'wb') do |file|
-      file.write("#{create_long_line}\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
+      file.write("#{create_line(2000)}\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
     end
     puts "Done #{args[:size]}mb_long_line.txt"
   end
 
-  task :create_medium_line_file, [:size] => [:environment] do |_task, args|
+  #################################################################################################
+  # Script - Create Medium Line File
+  #
+  # Description
+  ### INPUT: size in MB
+  ### Accepts a size argument and will create a file with medium number of character per line with
+  ### approximatly the given size
+  #################################################################################################
+  task :medium_line_file, [:size] => [:environment] do |_task, args|
     File.open("./#{args[:size]}mb_medium_line.txt", 'wb') do |file|
-      file.write("#{create_medium_line}\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
+      file.write("#{create_line(250)}\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
     end
     puts "Done #{args[:size]}mb_medium_line.txt"
   end
 
-  task :create_short_line_file, [:size] => [:environment] do |_task, args|
+  #################################################################################################
+  # Script - Create Short Line File
+  #
+  # Description
+  ### INPUT: size in MB
+  ### Accepts a size argument and will create a file with low number of character per line with
+  ### approximatly the given size
+  #################################################################################################
+  task :short_line_file, [:size] => [:environment] do |_task, args|
     File.open("./#{args[:size]}mb_short_line.txt", 'wb') do |file|
-      file.write("#{create_short_line}\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
+      file.write("#{create_line(5)}\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
     end
     puts "Done #{args[:size]}mb_short_line.txt"
   end
 
-  task :create_only_paragraphs_file, [:size] => [:environment] do |_task, args|
+  #################################################################################################
+  # Script - Create Only Paragraph File
+  #
+  # Description
+  ### INPUT: size in MB
+  ### Accepts a size argument and will create a file with with only empty lines with approximatly
+  ### the given size
+  #################################################################################################
+  task :only_paragraphs_file, [:size] => [:environment] do |_task, args|
     File.open("./#{args[:size]}mb_only_paragraphs.txt", 'wb') do |file|
       file.write("\n") while File.size(file).to_f / one_megabyte < args[:size].to_f
     end
@@ -94,30 +131,16 @@ namespace :create do
 
   private
 
-  def create_long_line
+  #################################################################################################
+  # Function - create a long line.
+  ### INPUT: max number of
+  ### Creates a line with 0 to 2000 words, each word with 0 to 25 characters, meaning each line can
+  ### have a total of 52000 characters although it is nearly impossible
+  #################################################################################################
+  def create_line(max_words)
     letters = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten # From a to z and from A to Z - All characters considered in ASCII
     words = []
-    (0..rand(2000)).each do
-      word = (0..rand(25)).map { letters[rand(letters.length)] }.join # Gererate random strings with lenth between 1 and 26
-      words.push(word)
-    end
-    words.join(' ')
-  end
-
-  def create_medium_line
-    letters = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten # From a to z and from A to Z - All characters considered in ASCII
-    words = []
-    (0..rand(250)).each do
-      word = (0..rand(25)).map { letters[rand(letters.length)] }.join # Gererate random strings with lenth between 1 and 26
-      words.push(word)
-    end
-    words.join(' ')
-  end
-
-  def create_short_line
-    letters = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten # From a to z and from A to Z - All characters considered in ASCII
-    words = []
-    (0..rand(5)).each do
+    (0..rand(max_words)).each do
       word = (0..rand(25)).map { letters[rand(letters.length)] }.join # Gererate random strings with lenth between 1 and 26
       words.push(word)
     end

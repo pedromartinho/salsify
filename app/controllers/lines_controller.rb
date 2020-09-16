@@ -18,7 +18,7 @@ class LinesController < ApplicationController
 
 
     # DEFINIR METRICAS!!!
-    if @line_number < 100 && ENV['FILE_SIZE'] / ENV['FILE_LINES']
+    if @line_number < 100 && ENV['FILE_SIZE'] / ENV['FILE_LINES'] < 1024
       file.each_with_index do |line, idx|
         if idx == @line_number
           line_content = line
