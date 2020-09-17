@@ -15,3 +15,5 @@ services:
       - "3000:3000"
     environment:
       - FILE_NAME=${FILE_NAME}
+      - FILE_SIZE=${FILE_SIZE}
+      - FILE_LINES=${FILE_LINES}

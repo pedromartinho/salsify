@@ -1,8 +1,7 @@
-namespace :create do
-  require 'benchmark'
-  one_megabyte = 1024 * 1024
-  file_sizes = [0.1, 0.5, 1, 5, 10, 50, 100, 500]
+require "#{Rails.root}/app/helpers/profile_helper"
+include ProfileHelper
 
+namespace :create do
   #################################################################################################
   # Script - Create All Files Script
   #
@@ -44,7 +43,7 @@ namespace :create do
   end
 
   #################################################################################################
-  # Script - Create Short Line Files Script
+  # Script - Create Short Line Files
   #
   # Description
   ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with a low number
@@ -57,7 +56,7 @@ namespace :create do
   end
 
   #################################################################################################
-  # Script - Create Only Paragraphs Files Script
+  # Script - Create Only Paragraphs Files
   #
   # Description
   ### Used for the creation of 0.1, 0.5, 1, 5, 10, 50, 100 and 500 MB text files with only empty
@@ -70,7 +69,7 @@ namespace :create do
   end
 
   #################################################################################################
-  # Script - Create Long Line File Script
+  # Script - Create Long Line File
   #
   # Description
   ### INPUT: size in MB
@@ -132,10 +131,12 @@ namespace :create do
   private
 
   #################################################################################################
-  # Function - create a long line.
-  ### INPUT: max number of
-  ### Creates a line with 0 to 2000 words, each word with 0 to 25 characters, meaning each line can
-  ### have a total of 52000 characters although it is nearly impossible
+  # Function - Create Line
+  #
+  # Description
+  ### INPUT: max number of words
+  ### Requires a max number of words argument and creates a line with 0 to max number of words,
+  ### each word with 0 to 25 characters
   #################################################################################################
   def create_line(max_words)
     letters = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten # From a to z and from A to Z - All characters considered in ASCII
@@ -145,45 +146,5 @@ namespace :create do
       words.push(word)
     end
     words.join(' ')
-  end
-
-  def profile_memory
-    memory_usage_before = `ps -o rss= -p #{Process.pid}`.to_i
-    yield
-    memory_usage_after = `ps -o rss= -p #{Process.pid}`.to_i
-
-    used_memory = ((memory_usage_after - memory_usage_before) / 1024.0).round(2)
-    # puts "Memory usage: #{used_memory} MB"
-    print ";#{used_memory}\n"
-  end
-
-  def profile_time
-    time_elapsed = Benchmark.realtime do
-      yield
-    end
-
-    # puts "Time: #{time_elapsed.round(3)} seconds"
-    print ";#{time_elapsed.round(3)}"
-  end
-
-  def profile_gc
-    GC.start
-    before = GC.stat(:total_freed_objects)
-    yield
-    GC.start
-    after = GC.stat(:total_freed_objects)
-
-    # puts "Objects Freed: #{after - before}"
-    print ";#{after - before}"
-  end
-
-  def profile
-    profile_memory do
-      profile_time do
-        profile_gc do
-          yield
-        end
-      end
-    end
   end
 end

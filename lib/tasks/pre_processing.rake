@@ -1,7 +1,8 @@
-namespace :pre_processing do
-  chunk_size = 4096
-  buf = ''
+chunk_size = 4096
+buf = ''
+all_sizes = [0.1, 0.5, 1, 5, 10, 50, 100, 500]
 
+namespace :pre_processing do
   ####################################################################################################
   # Create File
   #
@@ -49,7 +50,6 @@ namespace :pre_processing do
   end
 
   task all: :environment do
-    all_sizes = [0.1, 0.5, 1, 5, 10, 50, 100, 500]
     all_file_types = ['long_line', 'medium_line', 'short_line', 'only_paragraphs']
     all_sizes.each do |size|
       all_file_types.each do |file_type|
