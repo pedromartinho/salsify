@@ -13,7 +13,7 @@ namespace :measure do
   #################################################################################################
   task all: :environment do
     all_file_types = ['long_line', 'medium_line', 'short_line', 'only_paragraphs']
-    all_script_types = ['read_file', 'enum', 'final']
+    all_script_types = ['read_lines', 'each_line', 'final']
     puts 'Pre Processing all files...'
     system('rails pre_processing:all')
     puts 'Star getting the metric values...'
@@ -37,14 +37,14 @@ namespace :measure do
   end
 
   #################################################################################################
-  # Script - Measure Enum
+  # Script - Measure Each Line
   #
   # Description
   ### This script uses the  COMPLETE
   #################################################################################################
-  task :enum, %i[size type index max] => [:environment] do |_task, args|
+  task :each_line, %i[size type index max] => [:environment] do |_task, args|
     file_name = "#{args[:size]}mb_#{args[:type]}.txt"
-    print "enum;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
+    print "each_line;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
     line_memory = nil
 
     index = args[:index].to_i
@@ -65,11 +65,10 @@ namespace :measure do
   # Description
   ### This script uses the readlines method that - COMPLETE
   #################################################################################################
-  task :read_file, %i[size type index max] => [:environment] do |_task, args|
+  task :read_lines, %i[size type index max] => [:environment] do |_task, args|
     file_name = "#{args[:size]}mb_#{args[:type]}.txt"
-    print "read_file;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
+    print "read_lines;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
     index = args[:index].to_i
-    final_line = ''
     profile do
       File.new(file_name).readlines[index]
     end

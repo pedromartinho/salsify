@@ -22,6 +22,7 @@ module Api
           message: 'Line number is bigger than the total number of lines in the file!'
         }, status: 413
       end
+      
       if @line_number < 100 && ENV['FILE_SIZE'].to_i / ENV['FILE_LINES'].to_i < 1024
         file.each_with_index do |line, idx|
           if idx == @line_number
@@ -47,12 +48,10 @@ module Api
         end
       end
 
-      if line_content.present?
-        render json: {
-          message: 'Found it!',
-          line:    line_content
-        }, status: 200
-      end
+      render json: {
+        message: 'Found it!',
+        line:    line_content
+      }, status: 200
     end
 
     private
