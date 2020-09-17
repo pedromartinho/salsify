@@ -32,7 +32,7 @@ I was having difficulties finding a better approach to the problem since this lo
 
 With that I mind, I've created the final solution using pre-processing to store the final line number you can find in each chunk. This solution is better explained in the code comments and also in the questions answers. The obtained results are presented in the image bellow the improvements are visible.
 
-<https://blog.appsignal.com/2018/07/10/ruby-magic-slurping-and-streaming-files.html>
+![Final Solution](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/final.png)
 
 _*In github I've only considered files up to 10mb because of the file sizes_
 
