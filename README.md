@@ -78,7 +78,7 @@ I've already talked of some documentation and posts but you can find the most im
 
 Since I've selected Ruby to provide the final solution, I've decided to use Ruby on Rails since it is the framework I've used the most in the last two and half years.
 
-I've also used the pg gem to have access to a PostgreSQL using the Active Records. I've also used the rswag gem in order to have the API documentation and rspec-rails for the endpoint tests. I've used this set up since it is the one I'm familiar with and met the requirements of the application.
+I've also used the pg gem to have access to a PostgreSQL using the Active Records. I've also used the rswag gem in order to have the API documentation (<http://localhost:3000/api-docs/index.html>) and rspec-rails for the endpoint tests. I've used this set up since it is the one I'm familiar with and met the requirements of the application.
 
 It is not a framework nor a library, but I've decided to use Docker in order to make sure that the application is running in the same conditions in every machine that runs it locally.
 

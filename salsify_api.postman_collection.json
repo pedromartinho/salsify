@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "98d31297-f135-471d-99d4-a48c2bf40d94",
+		"name": "Salsify API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Lines",
+			"item": [
+				{
+					"name": "show",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}api/lines/20",
+							"host": [
+								"{{api}}api"
+							],
+							"path": [
+								"lines",
+								"20"
+							],
+							"query": [
+								{
+									"key": "color_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "model_id",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9dd0ba6d-5c2f-4992-8b8f-d3c135faab1d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "719d4699-b33a-4f51-b3fb-2cffa3ea468f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "38560dac-f3d0-48bf-8231-9d96a982297e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "18a40bad-7948-4be4-8bc6-41ae3dd6438e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "25d4abd1-1209-490e-9340-9de21bdb2183",
+			"key": "api",
+			"value": "http://localhost:3000/"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

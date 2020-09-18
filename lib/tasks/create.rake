@@ -24,8 +24,8 @@ namespace :create do
   ### of characters per line
   #################################################################################################
   task long_line_files: :environment do
-    file_sizes.each do |file_s|
-      system("rails create:create_long_line_file[#{file_s}]")
+    all_sizes.each do |file_s|
+      system("rails create:long_line_file[#{file_s}]")
     end
   end
 
@@ -37,7 +37,7 @@ namespace :create do
   ### number of characters per line
   #################################################################################################
   task medium_line_files: :environment do
-    file_sizes.each do |file_s|
+    all_sizes.each do |file_s|
       system("rails create:medium_line_file[#{file_s}]")
     end
   end
@@ -50,7 +50,7 @@ namespace :create do
   ### of characters per line
   #################################################################################################
   task short_line_files: :environment do
-    file_sizes.each do |file_s|
+    all_sizes.each do |file_s|
       system("rails create:short_line_file[#{file_s}]")
     end
   end
@@ -63,7 +63,7 @@ namespace :create do
   ### lines
   #################################################################################################
   task only_paragraphs_files: :environment do
-    file_sizes.each do |file_s|
+    all_sizes.each do |file_s|
       system("rails create:only_paragraphs_file[#{file_s}]")
     end
   end
