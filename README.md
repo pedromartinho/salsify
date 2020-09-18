@@ -6,7 +6,7 @@ The project consists in the creation and endpoint to retrieve the content in a g
 
 ## Initial Setup
 
-As asked, you can find the files in the the only thing you need to have installed in your pc is **docker** and **docker-compose**. After that, simply run the commands bellow. The first one will be responsible for building the containers and the last to have the file pre processing done and make the application up.
+I've inserted theAs asked, you can find the files in the the only thing you need to have installed in your pc is **docker** and **docker-compose**. After that, simply run the commands bellow. The first one will be responsible for building the containers and the last to have the file pre processing done and make the application up.
 
 ```./build.sh```
 
@@ -20,19 +20,19 @@ After having the functions that allowed me to get this values, I've focussed on 
 
 The first considered approach involved reading all the file and use the method readlines (<https://apidock.com/ruby/IO/readlines>) that will return an array with all file lines. The evidence of the bad results can be seen in the image bellow. In the presented images, each dot corresponds to results on the different files.
 
-![Read Lines](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/read_lines.png)
+![Read Lines](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/read_lines_graph.png)
 
 This method proved to be very slow when the number of the lines was very big (only paragraphs files). As expected, it also proved to consume a lot of memory since it had to load all the file and create this huge array with all the file lines, getting incredibly high values of memory consumed when the
 
 The second approach brought much interesting results since it used much less memory an retrieved the correct line much faster. This is the case when using the method.each (<https://apidock.com/ruby/IO/each>) on IO object that. This works with and enumerator that will run over the file and inserting content into a buffer until it finds a "\n" char. After that, moves to the next iteration and the loop is stopped as soon as it reaches the line number.
 
-![Each Line](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/each_line.png)
+![Each Line](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/each_line_graph.png)
 
 I was having difficulties finding a better approach to the problem since this looked like it was working fine and I was trying to avoid using a database to store file information. I've though on compressing the file to use less memory, but the approach did not look feasible. Then I started using chunks and the results were not better than the ones using the io.each enumerator. Then, I came across this post <https://blog.appsignal.com/2018/07/10/ruby-magic-slurping-and-streaming-files.html> that reminded me that I could use pointers to get to a closer point to the line much faster.
 
 With that I mind, I've created the final solution using pre-processing to store the final line number you can find in each chunk. This solution is better explained in the code comments and also in the questions answers. The obtained results are presented in the image bellow the improvements are visible.
 
-![Final Solution](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/final.png)
+![Final Solution](https://teste-martinho-page.s3-eu-west-1.amazonaws.com/share/final_graph.png)
 
 _*In github I've only considered files up to 10mb because of the file sizes_
 
