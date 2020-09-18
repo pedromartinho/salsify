@@ -17,7 +17,7 @@ namespace :measure do
     puts 'Pre Processing all files...'
     system('rails pre_processing:all')
     puts 'Star getting the metric values...'
-    print "script;file_name;file_size;index;max;freed_objs;time;used_memory\n"
+    # print "script;file_name;file_size;index;max;freed_objs;time;used_memory\n"
     3.times do
       all_script_types.each do |script_type|
         all_sizes.each do |size|
@@ -40,11 +40,16 @@ namespace :measure do
   # Script - Measure Each Line
   #
   # Description
-  ### This script uses the  COMPLETE
+  ### INPUT: size - file size in MB
+  ###        type - file type
+  ###        index - line number to read content
+  ###        max - max number of lines
+  ### This script uses the IO.each method to obtain the asked line and prints the considered
+  ### metrics in the console
   #################################################################################################
   task :each_line, %i[size type index max] => [:environment] do |_task, args|
     file_name = "#{args[:size]}mb_#{args[:type]}.txt"
-    print "each_line;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
+    # print "each_line;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
     line_memory = nil
 
     index = args[:index].to_i
@@ -63,11 +68,16 @@ namespace :measure do
   # Script - Measure Read File
   #
   # Description
-  ### This script uses the readlines method that - COMPLETE
+  ### INPUT: size - file size in MB
+  ###        type - file type
+  ###        index - line number to read content
+  ###        max - max number of lines
+  ### This script uses the IO.readlines method to obtain the asked line and prints the considered
+  ### metrics in the console
   #################################################################################################
   task :read_lines, %i[size type index max] => [:environment] do |_task, args|
     file_name = "#{args[:size]}mb_#{args[:type]}.txt"
-    print "read_lines;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
+    # print "read_lines;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
     index = args[:index].to_i
     profile do
       File.new(file_name).readlines[index]
@@ -78,15 +88,18 @@ namespace :measure do
   # Script - Measure Final
   #
   # Description
+  ### INPUT: size - file size in MB
+  ###        type - file type
+  ###        index - line number to read content
+  ###        max - max number of lines
   ### Uses information obtained in the file pre-processment to reach a solution faster and using
   ### less memory. This is achieved moving the file pointer to a zone of the file where the line
-  ### number is still lower than the line we want to get but it much closer. After reaching this
-  ### point, will use the each method for the file that will read line by line until it reachs the
-  ### desired line
+  ### number is lower than the line we want to get but it much closer. After reaching this point,
+  ### uses the IO.each method to get to the desired line
   #################################################################################################
   task :final, %i[size type index max] => [:environment] do |_task, args|
     file_name = "#{args[:size]}mb_#{args[:type]}.txt"
-    print "final;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
+    # print "final;#{file_name};#{args[:size]};#{args[:index]};#{args[:max]}"
 
     fd = FileDetail.find_by(name: file_name)
     profile do

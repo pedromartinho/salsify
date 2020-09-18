@@ -1,13 +1,14 @@
-chunk_size = 4096
-buf = ''
-all_sizes = [0.1, 0.5, 1, 5, 10, 50, 100, 500]
+require "#{Rails.root}/app/helpers/profile_helper"
+include ProfileHelper
 
 namespace :pre_processing do
   ####################################################################################################
-  # Create File
+  # Script - Pre Processing File
   #
-  # Script Description
-  ### Used for the creation of a 1 GB file text file
+  # Description
+  ### First, this script will clean the data from the database. After that, it will read the file
+  ### chunk by chunk and store the last line number he spoted in each chunkWill read the file chunk
+  ### by chunk and store in the database.
   ####################################################################################################
 
   task file: :environment do
@@ -21,7 +22,6 @@ namespace :pre_processing do
     end
     line_count = 1
     chunk_count = 0
-    new_line = false
     time_now = Time.now
     values = []
     while buf = file.read(chunk_size)
@@ -49,6 +49,13 @@ namespace :pre_processing do
     )
   end
 
+  ####################################################################################################
+  # Script - Pre Processing File
+  #
+  # Description
+  ### Performs the pre processing method for all the files in the root folder and stores their
+  ### information into the database
+  ####################################################################################################
   task all: :environment do
     all_file_types = ['long_line', 'medium_line', 'short_line', 'only_paragraphs']
     all_sizes.each do |size|
@@ -64,7 +71,6 @@ namespace :pre_processing do
         end
         line_count = 1
         chunk_count = 0
-        new_line = false
         time_now = Time.now
         values = []
         while buf = file.read(chunk_size)
